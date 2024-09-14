@@ -1,0 +1,151 @@
+3. Selecting Data
+sql
+Copy code
+SELECT * FROM Students;
+Retrieves all rows and columns from the Students table.
+4. Filtering Data
+sql
+Copy code
+SELECT * FROM Students
+WHERE Age > 20;
+Retrieves students older than 20 years.
+5. Sorting Data
+sql
+Copy code
+SELECT * FROM Students
+ORDER BY Age DESC;
+Retrieves all data sorted by age in descending order.
+6. Updating Data
+sql
+Copy code
+UPDATE Students
+SET Grade = 'A+'
+WHERE Name = 'Jane Smith';
+Updates the Grade of "Jane Smith" to A+.
+7. Deleting Data
+sql
+Copy code
+DELETE FROM Students
+WHERE StudentID = 2;
+Deletes the record of the student with StudentID = 2.
+Intermediate Level
+8. Using Aggregate Functions
+sql
+Copy code
+SELECT AVG(Age) AS AverageAge, COUNT(*) AS TotalStudents
+FROM Students;
+Returns the average age of students and the total number of students.
+9. Using GROUP BY and HAVING
+sql
+Copy code
+SELECT Grade, COUNT(*) AS StudentsCount
+FROM Students
+GROUP BY Grade
+HAVING COUNT(*) > 1;
+Groups students by Grade and displays grades with more than 1 student.
+10. INNER JOIN
+sql
+Copy code
+CREATE TABLE Courses (
+    CourseID INT PRIMARY KEY,
+    CourseName VARCHAR(50)
+);
+
+CREATE TABLE Enrollments (
+    EnrollmentID INT PRIMARY KEY,
+    StudentID INT,
+    CourseID INT,
+    FOREIGN KEY (StudentID) REFERENCES Students(StudentID),
+    FOREIGN KEY (CourseID) REFERENCES Courses(CourseID)
+);
+
+SELECT s.Name, c.CourseName
+FROM Students s
+INNER JOIN Enrollments e ON s.StudentID = e.StudentID
+INNER JOIN Courses c ON e.CourseID = c.CourseID;
+Joins Students, Enrollments, and Courses tables to list which student is enrolled in which course.
+11. Subquery Example
+sql
+Copy code
+SELECT Name
+FROM Students
+WHERE Age > (SELECT AVG(Age) FROM Students);
+Selects the names of students who are older than the average student age.
+12. UNION
+sql
+Copy code
+SELECT Name FROM Students WHERE Grade = 'A'
+UNION
+SELECT Name FROM Students WHERE Age > 20;
+Combines results from two queries without duplicates (use UNION ALL for duplicates).
+Advanced Level
+13. Window Functions
+sql
+Copy code
+SELECT Name, Age,
+       ROW_NUMBER() OVER (ORDER BY Age DESC) AS RowNum
+FROM Students;
+Uses ROW_NUMBER() to rank students based on age.
+14. CTEs (Common Table Expressions)
+sql
+Copy code
+WITH OldStudents AS (
+    SELECT * FROM Students WHERE Age > 21
+)
+SELECT * FROM OldStudents;
+Creates a temporary result set OldStudents that you can use in subsequent queries.
+15. Recursive CTE
+sql
+Copy code
+WITH RECURSIVE Numbers AS (
+    SELECT 1 AS Num
+    UNION ALL
+    SELECT Num + 1 FROM Numbers WHERE Num < 5
+)
+SELECT * FROM Numbers;
+Generates a series of numbers from 1 to 5 using recursion.
+16. Indexes
+sql
+Copy code
+CREATE INDEX idx_student_name ON Students(Name);
+Creates an index on the Name column to speed up searches on the Students table.
+17. Transactions
+sql
+Copy code
+BEGIN;
+
+UPDATE Students SET Age = Age + 1 WHERE StudentID = 1;
+DELETE FROM Students WHERE StudentID = 2;
+
+COMMIT;
+This transaction updates a student’s age and deletes another student, committing both actions as a unit.
+18. Triggers
+sql
+Copy code
+CREATE TRIGGER update_grade
+AFTER UPDATE ON Students
+FOR EACH ROW
+BEGIN
+    IF NEW.Age > 22 THEN
+        UPDATE Students SET Grade = 'Graduated' WHERE StudentID = NEW.StudentID;
+    END IF;
+END;
+Automatically updates the student's grade to Graduated if their age exceeds 22 after an update.
+
+
+19. Stored Procedure
+sql
+Copy code
+CREATE PROCEDURE IncreaseAge(IN StudentID INT)
+BEGIN
+    UPDATE Students
+    SET Age = Age + 1
+    WHERE StudentID = StudentID;
+END;
+Creates a stored procedure that increases the age of a student by 1.
+20. Advanced Subqueries with EXISTS
+sql
+SELECT Name
+FROM Students s
+WHERE EXISTS (SELECT 1 FROM Enrollments e WHERE s.StudentID = e.StudentID);
+Selects the names of students who have enrollments.
